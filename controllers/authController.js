@@ -40,3 +40,16 @@ export const register = (req, res) => {
     }
   );
 };
+
+// Logout route handler
+export const logout = (req, res) => {
+  console.log('Logging out user:', req.user.username); // Log username for debugging
+  req.logout((err) => {
+    if (err) {
+      console.error('Logout error:', err);
+      return res.status(500).json({ message: 'Failed to logout', error: err.message });
+    }
+    console.log('User logged out successfully');
+    res.json({ message: 'Logout successful' });
+  });
+};

@@ -1,41 +1,33 @@
+// auth.js
 import passport from 'passport';
-import passportJWT from 'passport-jwt';
-import User from '../models/user.js'; // Adjust the path to where your User model is located
-import cfg from '../config.js'; // Adjust the path to your config
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import User from '../models/user.js'; // Adjust path as per your project structure
+import cfg from '../config.js'; // Adjust path as per your project structure
 
-const { ExtractJwt, Strategy } = passportJWT;
-
-const params = {
+const jwtOptions = {
   secretOrKey: cfg.jwtSecret,
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken('jwt')
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
 };
 
-const auth = () => {
-  const strategy = new Strategy(params, async (payload, done) => {
-    try {
-      const user = await User.findById(payload.id);
-      if (!user) {
-        return done(new Error('UserNotFound'), null);
-      } else if (payload.expire <= Date.now()) {
-        return done(new Error('TokenExpired'), null);
-      } else {
-        return done(null, user);
-      }
-    } catch (err) {
-      return done(err, null);
+const strategy = new JwtStrategy(jwtOptions, async (payload, done) => {
+  try {
+    const user = await User.findById(payload.id);
+    if (!user) {
+      return done(new Error('UserNotFound'), null);
+    } else if (payload.expire <= Date.now()) {
+      return done(new Error('TokenExpired'), null);
+    } else {
+      return done(null, user);
     }
-  });
+  } catch (err) {
+    return done(err, null);
+  }
+});
 
-  passport.use(strategy);
+passport.use(strategy);
 
-  return {
-    initialize() {
-      return passport.initialize();
-    },
-    authenticate() {
-      return passport.authenticate('jwt', cfg.jwtSession);
-    }
-  };
+export const auth = {
+  initialize: () => passport.initialize(),
+  authenticate: () => passport.authenticate('jwt', { session: false })
 };
 
-export default auth();

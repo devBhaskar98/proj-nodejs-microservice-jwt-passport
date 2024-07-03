@@ -14,7 +14,7 @@
 import express from 'express';
 import authRoute from './routes/authRoute.js';
 import postRoute from './routes/postRoute.js';
-import auth from './middleware/auth.js';
+import {auth} from './middleware/auth.js';
 import mongoose from 'mongoose';
 import passport from 'passport';
 // import { Strategy as LocalStrategy } from 'passport-local';
@@ -36,17 +36,18 @@ app.use(bodyParser.json());
 // 
 // Set up session middleware
 app.use(session({
-  secret: 'your-secret-key', // Replace with your own secret key
+  secret: 'nodejspass', // Replace with your own secret key
   resave: false, // Forces the session to be saved back to the session store
   saveUninitialized: true, // Forces a session that is "uninitialized" to be saved to the store
   cookie: { secure: false } // Set to true if using https
 }));
 
 app.use(auth.initialize());
-// Passport Config
-passport.use(new LocalStrategy(User.authenticate()));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Passport Config
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
