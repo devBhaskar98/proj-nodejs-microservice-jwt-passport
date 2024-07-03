@@ -8,6 +8,7 @@ const express = require("express"),
   localStrategy = require("passport-local"),
   User = require("./models/user"),
   bodyParser = require("body-parser");
+  const session = require('express-session');
 
 mongoose.connect("mongodb://127.0.0.1/sampledb", {
   useNewUrlParser: true,
@@ -15,6 +16,16 @@ mongoose.connect("mongodb://127.0.0.1/sampledb", {
 });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// 
+// Set up session middleware
+app.use(session({
+  secret: 'your-secret-key', // Replace with your own secret key
+  resave: false, // Forces the session to be saved back to the session store
+  saveUninitialized: true, // Forces a session that is "uninitialized" to be saved to the store
+  cookie: { secure: false } // Set to true if using https
+}));
+
 app.use(auth.initialize());
 // Passport Config
 passport.use(new localStrategy(User.authenticate()));
