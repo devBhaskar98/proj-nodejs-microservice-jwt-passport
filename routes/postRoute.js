@@ -1,7 +1,10 @@
-var express = require("express");
-var router = express.Router();
-var postController = require("../controllers/postController");
-var auth = require("../middleware/auth")();
-router.get("/mypost", auth.authenticate(), postController.get_post);
+import express from 'express';
+import {get_post} from '../controllers/postController.js';
+import auth from '../middleware/auth.js';
 
-module.exports = router;
+const router = express.Router();
+
+// Route definition using ES6 module syntax
+router.get('/mypost', auth.authenticate(), get_post);
+
+export default router;

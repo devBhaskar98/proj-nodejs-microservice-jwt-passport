@@ -1,15 +1,16 @@
-const passport = require('passport');
-var passportJWT = require("passport-jwt");
-const User = require('../models/user'); // Adjust the path to where your User model is located
-const cfg = require('../config.js'); // Adjust the path to your config
+import passport from 'passport';
+import passportJWT from 'passport-jwt';
+import User from '../models/user.js'; // Adjust the path to where your User model is located
+import cfg from '../config.js'; // Adjust the path to your config
 
-var ExtractJwt = passportJWT.ExtractJwt;
-var Strategy = passportJWT.Strategy;
-var params = {
+const { ExtractJwt, Strategy } = passportJWT;
+
+const params = {
   secretOrKey: cfg.jwtSecret,
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken("jwt")
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken('jwt')
 };
-module.exports = function() {
+
+const auth = () => {
   const strategy = new Strategy(params, async (payload, done) => {
     try {
       const user = await User.findById(payload.id);
@@ -28,11 +29,13 @@ module.exports = function() {
   passport.use(strategy);
 
   return {
-    initialize: function() {
+    initialize() {
       return passport.initialize();
     },
-    authenticate: function() {
+    authenticate() {
       return passport.authenticate('jwt', cfg.jwtSession);
     }
   };
 };
+
+export default auth();

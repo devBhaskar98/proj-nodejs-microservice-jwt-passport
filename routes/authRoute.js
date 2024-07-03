@@ -1,10 +1,11 @@
-const User = require('../models/user');
-var express = require('express');
-var passport = require('passport');
-var router = express.Router();
-var authController = require('../controllers/authController')
+import User from '../models/user.js'; // Adjust the path to where your User model is located
+import express from 'express';
+import passport from 'passport';
+import {login, register} from '../controllers/authController.js'; // Adjust the path to your authController
 
-router.post("/login", passport.authenticate("local") ,  authController.login)
-router.post("/register", authController.register)
+const router = express.Router();
 
-module.exports = router
+router.post("/login", passport.authenticate("local") ,  login)
+router.post("/register", register)
+
+export default router;

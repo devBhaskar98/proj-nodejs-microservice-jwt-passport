@@ -1,14 +1,30 @@
-const express = require("express"),
-  app = express(),
-  authRoute = require("./routes/authRoute"),
-  postRoute = require("./routes/postRoute"),
-  auth = require('./middleware/auth.js')(),
-  mongoose = require("mongoose"),
-  passport = require("passport"),
-  localStrategy = require("passport-local"),
-  User = require("./models/user"),
-  bodyParser = require("body-parser");
-  const session = require('express-session');
+// const express = require("express"),
+//   app = express(),
+//   authRoute = require("./routes/authRoute"),
+//   postRoute = require("./routes/postRoute"),
+//   auth = require('./middleware/auth.js')(),
+//   mongoose = require("mongoose"),
+//   passport = require("passport"),
+//   localStrategy = require("passport-local"),
+//   User = require("./models/user"),
+//   bodyParser = require("body-parser");
+//   const session = require('express-session');
+
+
+import express from 'express';
+import authRoute from './routes/authRoute.js';
+import postRoute from './routes/postRoute.js';
+import auth from './middleware/auth.js';
+import mongoose from 'mongoose';
+import passport from 'passport';
+// import { Strategy as LocalStrategy } from 'passport-local';
+import User from './models/user.js';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+
+import { Strategy as LocalStrategy } from 'passport-local'; 
+
+const app = new express();
 
 mongoose.connect("mongodb://127.0.0.1/sampledb", {
   useNewUrlParser: true,
@@ -28,7 +44,7 @@ app.use(session({
 
 app.use(auth.initialize());
 // Passport Config
-passport.use(new localStrategy(User.authenticate()));
+passport.use(new LocalStrategy(User.authenticate()));
 app.use(passport.initialize());
 app.use(passport.session());
 passport.serializeUser(User.serializeUser());
